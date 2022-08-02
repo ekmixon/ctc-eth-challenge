@@ -106,19 +106,18 @@ def fill_accounts():
 
     faucet_acc = eth_accounts[0]
 
-    for i, acc in enumerate(eth_accounts[1:]):
-
+    for acc in eth_accounts[1:]:
         # Check balance and request funds from a faucet if below threshold
         balance = w3.eth.getBalance(acc)
 
         if balance < w3.toWei(0.005, 'ether'):
-            logger.info("Account %s is below the threshold. Filling..." % acc)
+            logger.info(f"Account {acc} is below the threshold. Filling...")
             get_eth(faucet_acc, acc, w3.toWei(0.005, 'ether') - balance)
 
 def generate_accounts(n):
     logger.info("Generating %d accounts" % n)
 
-    for i in range(n):
+    for _ in range(n):
         w3.personal.newAccount(ETH_PASSWORD)
 
     list_accounts()
@@ -146,11 +145,11 @@ if __name__ == "__main__":
 
     if args.dbfile and args.dbfile != DB_FILE:
         DB_FILE = args.dbfile
-        logger.info("Using db file: %s" % DB_FILE)
+        logger.info(f"Using db file: {DB_FILE}")
 
     if args.ethpass and args.ethpass != ETH_PASSWORD:
         ETH_PASSWORD = args.ethpass
-        logger.info("Using eth password: %s" % ETH_PASSWORD)
+        logger.info(f"Using eth password: {ETH_PASSWORD}")
 
     if args.list_accounts:
         list_accounts()

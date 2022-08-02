@@ -28,7 +28,7 @@ def create():
     > return challenge_details
     """
 
-    engine = db.create_engine("sqlite:///" + DB_FILE)
+    engine = db.create_engine(f"sqlite:///{DB_FILE}")
     connection = engine.connect()
     metadata = db.MetaData()
     contracts = db.Table('contracts', metadata, autoload=True, autoload_with=engine)
@@ -47,7 +47,11 @@ def create():
 
         # Fetch an unused contract and unsolved address
         query = db.select([contracts.columns.address]).where(
-            and_(contracts.columns.solved == 0, contracts.columns.player == None))
+            and_(
+                contracts.columns.solved == 0, contracts.columns.player is None
+            )
+        )
+
         contract_addr = connection.execute(query).scalar()
 
         if not contract_addr:
@@ -79,7 +83,7 @@ def check_solve():
     a failed solve attempt
     """
 
-    engine = db.create_engine("sqlite:///" + DB_FILE)
+    engine = db.create_engine(f"sqlite:///{DB_FILE}")
     connection = engine.connect()
     metadata = db.MetaData()
     contracts = db.Table('contracts', metadata, autoload=True, autoload_with=engine)
@@ -120,11 +124,11 @@ if __name__ == "__main__":
     # Change database
     if args.dbfile and args.dbfile != DB_FILE:
         DB_FILE = args.dbfile
-        logger.info("Using db file: %s" % DB_FILE)
+        logger.info(f"Using db file: {DB_FILE}")
 
     # Start database connection
     if not os.path.isfile(DB_FILE):
-        logger.error("Database file %s does not exist!" % DB_FILE)
+        logger.error(f"Database file {DB_FILE} does not exist!")
         sys.exit(1)
 
     app.run(debug=True, threaded=True, host="127.0.0.1", port=args.port)
